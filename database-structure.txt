@@ -1,0 +1,89 @@
+=============================================================
+TÀI LIỆU CẤU TRÚC CƠ SỞ DỮ LIỆU (DATABASE SCHEMA) - VOCAL APP
+=============================================================
+* Lưu ý: Tất cả các bảng đều mặc định có 4 cột hệ thống:
+  - id (UUID, Primary Key, tự động sinh)
+  - created_at (Timestamp, mặc định now())
+  - updated_at (Timestamp, mặc định now())
+  - deleted_at (Timestamp, null - Dùng cho Soft Delete)
+
+-------------------------------------------------------------
+1. Bảng `users` (Người dùng)
+-------------------------------------------------------------
+- email             : varchar (Unique, bắt buộc)
+- username          : varchar
+- phone             : varchar
+- status            : varchar (Mặc định: 'active')
+- is_onboarded      : boolean (Mặc định: false - Đánh dấu đã qua màn hình hướng dẫn chưa)
+- time_trial        : boolean (Mặc định: true - Đang trong thời gian dùng thử)
+- trial_expiration  : timestamp (Ngày hết hạn dùng thử)
+- package_level     : varchar (Mặc định: 'Basic' - Gói tài khoản)
+- gold              : int (Mặc định: 0 - Vàng/Tiền tệ trong game)
+- learning_points   : int (Mặc định: 0 - Điểm kinh nghiệm học tập)
+- pity_counter      : int (Mặc định: 0 - Bộ đếm cơ chế "bảo hiểm" khi gacha/mở hộp)
+
+-------------------------------------------------------------
+2. Bảng `categories` (Danh mục từ vựng)
+-------------------------------------------------------------
+- name              : varchar (Bắt buộc - Tên danh mục)
+- description       : text (Mô tả chi tiết)
+
+-------------------------------------------------------------
+3. Bảng `vocabularies` (Từ vựng)
+-------------------------------------------------------------
+- word              : varchar (Bắt buộc - Từ vựng)
+- level             : varchar (Bắt buộc - Cấp độ khó)
+- storyline         : text (Câu chuyện tạo bởi AI để dễ nhớ từ)
+- general           : text (Thông tin chung/Nghĩa cơ bản)
+- image_path        : varchar (Đường dẫn ảnh minh họa)
+- total_attempts    : int (Mặc định: 0 - Tổng số lần học/kiểm tra từ này)
+- wrong_attempts    : int (Mặc định: 0 - Số lần trả lời sai)
+- category_id       : uuid (Foreign Key -> categories.id - Bảng cha: Danh mục)
+
+-------------------------------------------------------------
+4. Bảng `items` (Vật phẩm trong game)
+-------------------------------------------------------------
+- name              : varchar (Bắt buộc - Tên vật phẩm)
+- description       : varchar (Mô tả)
+- type              : varchar (Bắt buộc - Loại vật phẩm)
+- rarity_star       : int (Mặc định: 4 - Độ hiếm/Số sao)
+- price_gold        : int (Mặc định: 0 - Giá mua bằng vàng)
+
+-------------------------------------------------------------
+5. Bảng `user_inventory` (Túi đồ của người dùng)
+-------------------------------------------------------------
+- quantity          : int (Mặc định: 1 - Số lượng đang sở hữu)
+- acquired_at       : timestamp (Mặc định: now() - Thời gian nhận)
+- user_id           : uuid (Foreign Key -> users.id)
+- item_id           : uuid (Foreign Key -> items.id)
+
+-------------------------------------------------------------
+6. Bảng `learning_logs` (Lịch sử học từ vựng)
+-------------------------------------------------------------
+- is_correct        : boolean (Bắt buộc - Đánh dấu trả lời đúng hay sai)
+- user_id           : uuid (Foreign Key -> users.id)
+- vocabulary_id     : uuid (Foreign Key -> vocabularies.id)
+
+-------------------------------------------------------------
+7. Bảng `test_histories` (Lịch sử làm bài kiểm tra)
+-------------------------------------------------------------
+- score             : int (Mặc định: 0 - Điểm số đạt được)
+- number_attempt    : int (Mặc định: 0 - Lần thi thứ mấy)
+- user_id           : uuid (Foreign Key -> users.id)
+- category_id       : uuid (Foreign Key -> categories.id)
+
+-------------------------------------------------------------
+8. Bảng `chat_messages` (Tin nhắn Chat)
+-------------------------------------------------------------
+- message           : text (Bắt buộc - Nội dung chat)
+- user_id           : uuid (Foreign Key -> users.id)
+
+-------------------------------------------------------------
+9. Bảng `attendances` (Điểm danh hàng ngày)
+-------------------------------------------------------------
+- checkin_date      : date (Bắt buộc - Ngày điểm danh)
+- is_x2_reward      : boolean (Mặc định: false - Có nhận thưởng x2 không)
+- reward_type       : varchar (Loại phần thưởng nhận được)
+- user_id           : uuid (Foreign Key -> users.id)
+
+=============================================================

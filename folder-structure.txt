@@ -1,0 +1,27 @@
+stvocabs/                            <-- Thư mục gốc Nx Monorepo
+├── apps/
+│   ├── admin/                       <-- Service Admin Frontend (ReactJS)
+│   ├── client/                      <-- Service Client/User Frontend (ReactJS)
+│   └── backend/                     <-- Service Backend (NestJS)
+│       ├── src/
+│       │   ├── app/
+│       │   │   ├── admin/           <-- Gom nhóm các API dành cho Admin
+│       │   │   │   └── categories/
+│       │   │   │       ├── category.controller.ts
+│       │   │   │       ├── category.service.ts
+│       │   │   │       └── category.module.ts
+│       │   │   ├── auth/            <-- Gom nhóm logic xác thực
+│       │   │   │   └── guards/
+│       │   │   │       └── basic-auth.guard.ts
+│       │   │   ├── app.module.ts    <-- Root Module (Import CategoryModule, ALL_ENTITIES, tắt migrations)
+│       │   │   └── entities.ts      <-- Chứa CẢ 9 BẢNG Entity và mảng ALL_ENTITIES
+│       │   ├── migrations/          
+│       │   │   └── 1773572512942-init-tables.ts  <-- File TypeORM migration của bạn
+│       │   ├── data-source.ts       <-- Cấu hình DB gốc (Nguồn chân lý duy nhất để export dbOptions)
+│       │   └── main.ts              <-- Entrypoint (Bật CORS, set global prefix '/api')
+│       ├── project.json             <-- Config của Nx cho app backend
+│       └── tsconfig.app.json
+├── libs/                            <-- Thư mục Nx tạo sẵn (sau này chứa code dùng chung cho 2 FE)
+├── nx.json                          <-- Cấu hình cốt lõi của Nx Monorepo
+├── package.json                     <-- Chứa danh sách các thư viện (Nest, TypeORM, React...)
+└── tsconfig.base.json
