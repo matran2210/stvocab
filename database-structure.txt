@@ -10,12 +10,12 @@ TÀI LIỆU CẤU TRÚC CƠ SỞ DỮ LIỆU (DATABASE SCHEMA) - VOCAL APP
 -------------------------------------------------------------
 1. Bảng `users` (Người dùng)
 -------------------------------------------------------------
+- name              : varchar
 - email             : varchar (Unique, bắt buộc)
 - username          : varchar
 - phone             : varchar
 - status            : varchar (Mặc định: 'active')
 - is_onboarded      : boolean (Mặc định: false - Đánh dấu đã qua màn hình hướng dẫn chưa)
-- time_trial        : boolean (Mặc định: true - Đang trong thời gian dùng thử)
 - trial_expiration  : timestamp (Ngày hết hạn dùng thử)
 - package_level     : varchar (Mặc định: 'Basic' - Gói tài khoản)
 - gold              : int (Mặc định: 0 - Vàng/Tiền tệ trong game)

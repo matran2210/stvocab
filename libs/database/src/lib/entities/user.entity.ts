@@ -5,8 +5,11 @@ import { AbstractEntity } from './abtract.entity';
 
 @Entity('users')
 export class User extends AbstractEntity<User>  {
+  @Column({ nullable: true })
+  name: string;
+
   @Column({ unique: true })
-  email: string; // Đăng nhập không cần mật khẩu
+  email: string;
 
   @Column({ nullable: true })
   username: string;
@@ -19,9 +22,6 @@ export class User extends AbstractEntity<User>  {
 
   @Column({ default: false })
   is_onboarded!: boolean; // Cập nhật thành true sau khi user xem xong Guideline
-
-  @Column({ default: true })
-  time_trial: boolean; // Tài khoản dùng thử
 
   @Column({ type: 'timestamp', nullable: true })
   trial_expiration: Date;
