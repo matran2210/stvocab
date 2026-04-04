@@ -12,7 +12,6 @@ TÀI LIỆU CẤU TRÚC CƠ SỞ DỮ LIỆU (DATABASE SCHEMA) - VOCAL APP
 -------------------------------------------------------------
 - name              : varchar
 - email             : varchar (Unique, bắt buộc)
-- username          : varchar
 - phone             : varchar
 - status            : varchar (Mặc định: 'active')
 - is_onboarded      : boolean (Mặc định: false - Đánh dấu đã qua màn hình hướng dẫn chưa)
@@ -48,6 +47,10 @@ TÀI LIỆU CẤU TRÚC CƠ SỞ DỮ LIỆU (DATABASE SCHEMA) - VOCAL APP
 - type              : varchar (Bắt buộc - Loại vật phẩm)
 - rarity_star       : int (Mặc định: 4 - Độ hiếm/Số sao)
 - price_gold        : int (Mặc định: 0 - Giá mua bằng vàng)
+- image_url         : varchar Ảnh của item như ảnh khung viền
+- is_stackable      : boolean Có stack lại vs nhau hay không
+- is_active         : boolean Có được kích hoạt hay không
+- metadata          : jsonb Metadata dùng để chứa các cấu hình đặc thù của từng loại item như css
 
 -------------------------------------------------------------
 5. Bảng `user_inventory` (Túi đồ của người dùng)

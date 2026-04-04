@@ -20,7 +20,6 @@ export class AuthService {
     if (!user) {
       user = this.userRepository.create({
         email,
-        username: email.split('@')[0],
         gold: 0,
         learning_points: 0,
         is_onboarded: false,

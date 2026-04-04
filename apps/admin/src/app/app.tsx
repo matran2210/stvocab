@@ -5,6 +5,8 @@ import ProtectedRoute from '../component/ProtectedRoute';
 import CategoryList from '../pages/categories/CategoryList';
 import VocabularyList from '../pages/vocabularies/VocabularyList';
 import VocabularyEdit from '../pages/vocabularies/VocabularyEdit';
+import UserList from '../pages/users/UserList';
+import AvatarFrameDesigner from '../pages/items/AvatarFrameDesigner';
 
 export default function App() {
   return (
@@ -15,12 +17,11 @@ export default function App() {
       {/* Route Private: Phải qua ải ProtectedRoute check API Get Me */}
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<Home />} />
-        
-        {/* Sau này làm trang nào thì cứ nhét vào trong này */}
         <Route path="/categories" element={<CategoryList />} />
         <Route path="/vocabularies" element={<VocabularyList />} />
         <Route path="/vocabularies/edit/:id" element={<VocabularyEdit />} />
-        {/* <Route path="/users" element={<UserList />} /> */}
+        <Route path="/users" element={<UserList />} />
+        <Route path="/avatar-frame-designer" element={<AvatarFrameDesigner />} />
       </Route>
 
       {/* Vào link lung tung tự động đá về Home (Home sẽ tự đá về Login nếu chưa có token) */}

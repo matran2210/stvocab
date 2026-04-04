@@ -4,12 +4,13 @@ import { apiClient } from '../api/client';
 
 export default function Home() {
   const navigate = useNavigate();
-  
+
   // State lưu trữ số lượng phần tử
   const [stats, setStats] = useState({
     categories: 0,
     vocabularies: 0,
     users: 0,
+    frame_items: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,6 +26,7 @@ export default function Home() {
             categories: 12,
             vocabularies: 156,
             users: 1042,
+            frame_items: 32,
           });
           setIsLoading(false);
         }, 500); // Giả lập loading 0.5s
@@ -46,10 +48,20 @@ export default function Home() {
       btnColor: 'bg-blue-600 hover:bg-blue-700',
       link: '/categories',
       icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        <svg
+          className="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+          />
         </svg>
-      )
+      ),
     },
     {
       title: 'Từ vựng (Vocabulary)',
@@ -58,10 +70,20 @@ export default function Home() {
       btnColor: 'bg-green-600 hover:bg-green-700',
       link: '/vocabularies',
       icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        <svg
+          className="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+          />
         </svg>
-      )
+      ),
     },
     {
       title: 'Người dùng (User)',
@@ -70,21 +92,55 @@ export default function Home() {
       btnColor: 'bg-purple-600 hover:bg-purple-700',
       link: '/users',
       icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        <svg
+          className="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+          />
         </svg>
-      )
-    }
+      ),
+    },
+    // BỔ SUNG CỤC AVATAR FRAME Ở ĐÂY
+    {
+      title: 'Avatar Frame',
+      count: stats.frame_items,
+      color: 'bg-orange-50 text-orange-600',
+      btnColor: 'bg-orange-600 hover:bg-orange-700',
+      link: '/avatar-frame-designer',
+      icon: (
+        <svg
+          className="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
+        </svg>
+      ),
+    },
   ];
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Tổng quan hệ thống</h1>
-          <button 
+          <h1 className="text-3xl font-bold text-gray-800">
+            Tổng quan hệ thống
+          </h1>
+          <button
             onClick={() => {
               // Xóa toàn bộ thông tin đăng nhập khỏi localStorage
               localStorage.clear();
@@ -96,18 +152,22 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Lưới các thẻ thống kê */}
+        {/* Lưới các thẻ thống kê - Đã trả về nguyên bản 3 cột (md:grid-cols-3) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {cards.map((card, index) => (
-            <div key={index} className="bg-white rounded-2xl shadow-sm p-6 flex flex-col items-center border border-gray-100 transition-transform hover:-translate-y-1 hover:shadow-md">
-              
+            <div
+              key={index}
+              className="bg-white rounded-2xl shadow-sm p-6 flex flex-col items-center border border-gray-100 transition-transform hover:-translate-y-1 hover:shadow-md"
+            >
               {/* Icon */}
               <div className={`p-4 rounded-full mb-4 ${card.color}`}>
                 {card.icon}
               </div>
 
               {/* Tên & Số lượng */}
-              <h2 className="text-gray-500 font-medium text-lg">{card.title}</h2>
+              <h2 className="text-gray-500 font-medium text-lg">
+                {card.title}
+              </h2>
               <div className="text-4xl font-bold text-gray-800 my-4">
                 {isLoading ? (
                   <div className="w-16 h-8 bg-gray-200 animate-pulse rounded"></div>
@@ -123,11 +183,9 @@ export default function Home() {
               >
                 Xem chi tiết
               </button>
-              
             </div>
           ))}
         </div>
-
       </div>
     </div>
   );
