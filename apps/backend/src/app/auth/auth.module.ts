@@ -16,6 +16,6 @@ import { ACCESS_TOKEN_SECRET } from './auth.constants';
   ],
   controllers: [AuthController],
   providers: [AuthService, UserAccessTokenGuard],
-  exports: [AuthService],
+  exports: [AuthService, UserAccessTokenGuard],
 })
 export class AuthModule {}

@@ -1,7 +1,8 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { getStoredAuthUser } from '../utils/auth';
+import { type AuthenticatedUser } from '../utils/auth';
 
 type HeaderProps = {
+  user?: AuthenticatedUser | null;
   onAvatarClick?: () => void;
 };
 
@@ -46,10 +47,13 @@ function getAvatarLabel(name?: string | null) {
     .join('');
 }
 
-export function Header({ onAvatarClick }: HeaderProps) {
+function formatNumber(value?: number | null) {
+  return new Intl.NumberFormat('vi-VN').format(value ?? 0);
+}
+
+export function Header({ user, onAvatarClick }: HeaderProps) {
   const [isVisible, setIsVisible] = useState(true);
   const hideTimerRef = useRef<number | null>(null);
-  const user = getStoredAuthUser();
   const avatarLabel = getAvatarLabel(user?.name || user?.email);
 
   useEffect(() => {
@@ -107,7 +111,7 @@ export function Header({ onAvatarClick }: HeaderProps) {
             <div className="min-w-0">
               <StatBadge
                 label="Vàng"
-                value="1.250"
+                value={formatNumber(user?.gold)}
                 tone="bg-[#FFE17D]"
                 icon={
                   <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current">
@@ -119,7 +123,7 @@ export function Header({ onAvatarClick }: HeaderProps) {
             <div className="min-w-0">
               <StatBadge
                 label="Điểm"
-                value="3.480 XP"
+                value={`${formatNumber(user?.learningPoints)} XP`}
                 tone="bg-[#BCE7FD]"
                 icon={
                   <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current">
@@ -158,7 +162,7 @@ export function Header({ onAvatarClick }: HeaderProps) {
             <div className="w-[152px] min-w-0">
               <StatBadge
                 label="Vàng"
-                value="1.250"
+                value={formatNumber(user?.gold)}
                 tone="bg-[#FFE17D]"
                 icon={
                   <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current">
@@ -170,7 +174,7 @@ export function Header({ onAvatarClick }: HeaderProps) {
             <div className="w-[172px] min-w-0">
               <StatBadge
                 label="Điểm học tập"
-                value="3.480 XP"
+                value={`${formatNumber(user?.learningPoints)} XP`}
                 tone="bg-[#BCE7FD]"
                 icon={
                   <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current">

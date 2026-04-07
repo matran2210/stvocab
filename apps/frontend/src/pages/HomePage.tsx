@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import { CategoryCard } from '../components/CategoryCard';
 import { Header } from '../components/Header';
 import { NavigationMenu } from '../components/NavigationMenu';
 import { ProfilePanel } from '../components/ProfilePanel';
-import { vocabularyCategories } from '../data/categories';
+import { VocabularyCategorySection } from '../components/VocabularyCategorySection';
 import { navigationItems } from '../data/navigation';
 import { getCurrentUserProfile } from '../services/auth-api';
 import { getStoredAuthUser, type AuthenticatedUser } from '../utils/auth';
 
 export function HomePage() {
   const [activeItem, setActiveItem] = useState('learning');
+  const [isViewingAllCategories, setIsViewingAllCategories] = useState(false);
   const [user, setUser] = useState<AuthenticatedUser | null>(() => getStoredAuthUser());
 
   const activeLabel =
@@ -39,14 +39,24 @@ export function HomePage() {
     };
   }, []);
 
+  const handleSelectMenuItem = (itemId: string) => {
+    setActiveItem(itemId);
+    setIsViewingAllCategories(false);
+  };
+
   return (
     <main className="min-h-screen bg-[#FFFBF5] text-gray-900">
-      <Header onAvatarClick={() => setActiveItem('profile')} />
+      <Header user={user} onAvatarClick={() => setActiveItem('profile')} />
 
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 pb-36 pt-28 sm:px-6 sm:pb-40">
         {activeItem === 'profile' ? (
           <ProfilePanel
             user={user}
+          />
+        ) : activeItem === 'learning' && isViewingAllCategories ? (
+          <VocabularyCategorySection
+            mode="all"
+            onCollapse={() => setIsViewingAllCategories(false)}
           />
         ) : (
           <>
@@ -83,38 +93,17 @@ export function HomePage() {
               </div>
             </section>
 
-            <section className="mt-6">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-gray-700">
-                    Learning
-                  </p>
-                  <h2 className="text-2xl font-black sm:text-3xl">
-                    Danh mục từ vựng
-                  </h2>
-                </div>
-                <button className="rounded-full border-2 border-gray-900 bg-white px-4 py-2 text-sm font-black shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]">
-                  Xem
-                </button>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                {vocabularyCategories.map((category) => (
-                  <CategoryCard
-                    key={category.id}
-                    title={category.title}
-                    progress={category.progress}
-                    lessons={category.lessons}
-                    tone={category.tone}
-                  />
-                ))}
-              </div>
-            </section>
+            {activeItem === 'learning' ? (
+              <VocabularyCategorySection
+                mode="preview"
+                onViewAll={() => setIsViewingAllCategories(true)}
+              />
+            ) : null}
           </>
         )}
       </div>
 
-      <NavigationMenu activeItem={activeItem} onSelect={setActiveItem} />
+      <NavigationMenu activeItem={activeItem} onSelect={handleSelectMenuItem} />
     </main>
   );
 }

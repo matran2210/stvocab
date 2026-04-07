@@ -6,6 +6,7 @@ import { VocabularyModule } from './admin/vocabularies/vocabulary.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './admin/users/user.module';
 import { ItemModule } from './admin/items/item.module';
+import { ClientCategoryModule } from './client/categories/category.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { ItemModule } from './admin/items/item.module';
     CategoryModule,
     VocabularyModule,
     UserModule,
-    ItemModule
+    ItemModule,
+    ClientCategoryModule,
   ],
   controllers: [],
   providers: [],
