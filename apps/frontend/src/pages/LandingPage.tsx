@@ -1,35 +1,78 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAuthToken, saveAuthToken } from '../utils/auth';
+import { ApiError } from '../api/client';
+import { loginUser, registerUser, restoreUserSession } from '../services/auth-api';
+
+type ScreenStep = 'welcome' | 'login' | 'register';
 
 export function LandingPage() {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<ScreenStep>('welcome');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    if (getAuthToken()) {
-      navigate('/home', { replace: true });
-    }
+    let isActive = true;
+
+    const run = async () => {
+      const isAuthenticated = await restoreUserSession();
+
+      if (isAuthenticated) {
+        navigate('/home', { replace: true });
+        return;
+      }
+
+      if (isActive) {
+        setIsCheckingSession(false);
+      }
+    };
+
+    void run();
+
+    return () => {
+      isActive = false;
+    };
   }, [navigate]);
 
-  const handleMockLogin = () => {
-    saveAuthToken('stvocab-demo-token');
-    navigate('/home', { replace: true });
+  const openStep = (nextStep: ScreenStep) => {
+    setErrorMessage('');
+    setStep(nextStep);
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setErrorMessage('');
     setIsSubmitting(true);
 
-    await new Promise((resolve) => {
-      window.setTimeout(resolve, 900);
-    });
+    try {
+      if (step === 'login') {
+        await loginUser({ email: email.trim(), password });
+      } else {
+        if (password !== confirmPassword) {
+          setErrorMessage('Mật khẩu xác nhận chưa khớp');
+          return;
+        }
 
-    saveAuthToken(`stvocab-${fullName || 'guest'}-${email || 'demo'}`);
-    navigate('/home', { replace: true });
+        await registerUser({
+          name: fullName.trim(),
+          email: email.trim(),
+          password,
+        });
+      }
+
+      navigate('/home', { replace: true });
+    } catch (error) {
+      setErrorMessage(
+        error instanceof ApiError ? error.message : 'Không thể kết nối tới server'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -65,7 +108,11 @@ export function LandingPage() {
           </div>
 
           <div className="rounded-[36px] border-2 border-gray-900 bg-[#FFF4D6] p-6 shadow-[8px_8px_0px_0px_rgba(31,41,55,1)] sm:p-8">
-            {step === 1 ? (
+            {isCheckingSession ? (
+              <div className="flex h-full items-center justify-center rounded-[28px] border-2 border-gray-900 bg-white p-6 text-center text-base font-black shadow-[4px_4px_0px_0px_rgba(31,41,55,1)]">
+                Đang kiểm tra phiên đăng nhập...
+              </div>
+            ) : step === 'welcome' ? (
               <div className="flex h-full flex-col justify-between gap-8">
                 <div>
                   <p className="mb-3 text-sm font-extrabold uppercase tracking-[0.2em] text-gray-700">
@@ -86,7 +133,7 @@ export function LandingPage() {
                     </p>
                     <button
                       type="button"
-                      onClick={handleMockLogin}
+                      onClick={() => openStep('login')}
                       className="mt-3 w-full rounded-full border-2 border-gray-900 bg-[#BCE7FD] px-5 py-3 text-base font-black shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
                     >
                       Login
@@ -99,10 +146,10 @@ export function LandingPage() {
                     </p>
                     <button
                       type="button"
-                      onClick={() => setStep(2)}
+                      onClick={() => openStep('register')}
                       className="mt-3 w-full rounded-full border-2 border-gray-900 bg-[#FF9B71] px-5 py-3 text-base font-black shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
                     >
-                      Next Step
+                      Tạo tài khoản
                     </button>
                   </div>
                 </div>
@@ -111,13 +158,17 @@ export function LandingPage() {
               <div className="flex h-full flex-col gap-6">
                 <div>
                   <p className="mb-3 text-sm font-extrabold uppercase tracking-[0.2em] text-gray-700">
-                    Tạo hồ sơ học tập
+                    {step === 'login' ? 'Đăng nhập tài khoản' : 'Tạo hồ sơ học tập'}
                   </p>
                   <h2 className="text-3xl font-black leading-tight sm:text-4xl">
-                    Mỗi bài học đều được cá nhân hóa để bạn đi tiếp dễ hơn.
+                    {step === 'login'
+                      ? 'Tiếp tục phiên học của bạn bằng tài khoản đã đăng ký.'
+                      : 'Mỗi bài học đều được cá nhân hóa để bạn đi tiếp dễ hơn.'}
                   </h2>
                   <p className="mt-4 text-base font-bold leading-7">
-                    Giao diện thân thiện, lộ trình theo cấp độ và phần thưởng rõ ràng giúp bạn giữ nhịp học ngay từ ngày đầu tiên.
+                    {step === 'login'
+                      ? 'Đăng nhập để tiếp tục lộ trình học, theo dõi tiến độ và quay lại bài học đang làm.'
+                      : 'Giao diện thân thiện, lộ trình theo cấp độ và phần thưởng rõ ràng giúp bạn giữ nhịp học ngay từ ngày đầu tiên.'}
                   </p>
                 </div>
 
@@ -136,19 +187,27 @@ export function LandingPage() {
                   </div>
                 </div>
 
+                {errorMessage ? (
+                  <div className="rounded-[24px] border-2 border-red-500 bg-red-100 px-4 py-3 text-sm font-black text-red-700">
+                    {errorMessage}
+                  </div>
+                ) : null}
+
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <label className="block">
-                    <span className="mb-2 block text-sm font-extrabold uppercase tracking-[0.14em] text-gray-700">
-                      Họ và tên
-                    </span>
-                    <input
-                      value={fullName}
-                      onChange={(event) => setFullName(event.target.value)}
-                      placeholder="Ví dụ: Nguyễn Minh Anh"
-                      className="w-full rounded-[24px] border-2 border-gray-900 bg-white px-4 py-4 text-base font-bold outline-none shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] placeholder:text-gray-500 focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
-                      required
-                    />
-                  </label>
+                  {step === 'register' ? (
+                    <label className="block">
+                      <span className="mb-2 block text-sm font-extrabold uppercase tracking-[0.14em] text-gray-700">
+                        Họ và tên
+                      </span>
+                      <input
+                        value={fullName}
+                        onChange={(event) => setFullName(event.target.value)}
+                        placeholder="Ví dụ: Nguyễn Minh Anh"
+                        className="w-full rounded-[24px] border-2 border-gray-900 bg-white px-4 py-4 text-base font-bold outline-none shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] placeholder:text-gray-500 focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
+                        required
+                      />
+                    </label>
+                  ) : null}
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-extrabold uppercase tracking-[0.14em] text-gray-700">
@@ -164,10 +223,42 @@ export function LandingPage() {
                     />
                   </label>
 
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-extrabold uppercase tracking-[0.14em] text-gray-700">
+                      Mật khẩu
+                    </span>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      placeholder="Ít nhất 8 ký tự"
+                      minLength={8}
+                      className="w-full rounded-[24px] border-2 border-gray-900 bg-white px-4 py-4 text-base font-bold outline-none shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] placeholder:text-gray-500 focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
+                      required
+                    />
+                  </label>
+
+                  {step === 'register' ? (
+                    <label className="block">
+                      <span className="mb-2 block text-sm font-extrabold uppercase tracking-[0.14em] text-gray-700">
+                        Xác nhận mật khẩu
+                      </span>
+                      <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(event) => setConfirmPassword(event.target.value)}
+                        placeholder="Nhập lại mật khẩu"
+                        minLength={8}
+                        className="w-full rounded-[24px] border-2 border-gray-900 bg-white px-4 py-4 text-base font-bold outline-none shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] placeholder:text-gray-500 focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
+                        required
+                      />
+                    </label>
+                  ) : null}
+
                   <div className="flex flex-col gap-3 sm:flex-row">
                     <button
                       type="button"
-                      onClick={() => setStep(1)}
+                      onClick={() => openStep('welcome')}
                       className="rounded-full border-2 border-gray-900 bg-white px-5 py-3 text-base font-black shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
                     >
                       Quay lại
@@ -177,7 +268,13 @@ export function LandingPage() {
                       disabled={isSubmitting}
                       className="flex-1 rounded-full border-2 border-gray-900 bg-[#9BE564] px-5 py-3 text-base font-black shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] disabled:cursor-wait disabled:opacity-70"
                     >
-                      {isSubmitting ? 'Đang tạo tài khoản...' : 'Next Step'}
+                      {isSubmitting
+                        ? step === 'login'
+                          ? 'Đang đăng nhập...'
+                          : 'Đang tạo tài khoản...'
+                        : step === 'login'
+                          ? 'Đăng nhập'
+                          : 'Tạo tài khoản'}
                     </button>
                   </div>
                 </form>

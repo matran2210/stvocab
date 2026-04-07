@@ -44,6 +44,13 @@ function renderIcon(icon: string) {
           <path d="M5 4.5A2.5 2.5 0 0 0 2.5 7V22H20" />
         </svg>
       );
+    case 'user':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={className} strokeWidth="2">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20a8 8 0 0 1 16 0" />
+        </svg>
+      );
     case 'wheel':
       return (
         <svg viewBox="0 0 24 24" fill="none" className={className} strokeWidth="2">

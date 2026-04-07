@@ -2,22 +2,33 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@stvocab/database';
 import { Repository, Not } from 'typeorm';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private authService: AuthService,
   ) {}
 
   async create(createUserData: any) {
-    // Tương tự edit, bạn cũng có thể thêm check trùng email/username khi tạo mới ở đây
     if (createUserData.email) {
       const exist = await this.usersRepository.findOneBy({ email: createUserData.email });
       if (exist) throw new ConflictException('Email đã được sử dụng');
     }
-    const newUser = this.usersRepository.create(createUserData);
-    return await this.usersRepository.save(newUser);
+
+    const payload = { ...createUserData };
+
+    if (payload.password) {
+      payload.password_hash = await this.authService.hashPassword(payload.password);
+      delete payload.password;
+    }
+
+    const newUser = this.usersRepository.create(payload as Partial<User>);
+    const savedUser: User = await this.usersRepository.save(newUser);
+
+    return this.findOne(savedUser.id);
   }
 
   // Thêm logic phân trang
@@ -50,10 +61,8 @@ export class UserService {
   }
 
   async update(id: string, updateUserData: any) {
-    // 1. Kiểm tra user có tồn tại không
     await this.findOne(id); 
 
-    // 2. Check trùng Email (nếu có gửi lên email mới)
     if (updateUserData.email) {
       const existingEmail = await this.usersRepository.findOne({
         where: { email: updateUserData.email, id: Not(id) },
@@ -63,8 +72,14 @@ export class UserService {
       }
     }
 
-    // 4. Tiến hành update
-    await this.usersRepository.update(id, updateUserData);
+    const payload = { ...updateUserData };
+
+    if (payload.password) {
+      payload.password_hash = await this.authService.hashPassword(payload.password);
+      delete payload.password;
+    }
+
+    await this.usersRepository.update(id, payload);
     return this.findOne(id);
   }
 

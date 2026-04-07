@@ -11,6 +11,15 @@ export class User extends AbstractEntity<User>  {
   @Column({ unique: true })
   email: string;
 
+  @Column({ nullable: true, select: false })
+  password_hash: string;
+
+  @Column({ type: 'text', nullable: true, select: false })
+  refresh_token_hash: string;
+
+  @Column({ type: 'timestamp', nullable: true, select: false })
+  refresh_token_expires_at: Date;
+
   @Column({ nullable: true })
   phone: string;
 

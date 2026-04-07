@@ -1,4 +1,9 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { getStoredAuthUser } from '../utils/auth';
+
+type HeaderProps = {
+  onAvatarClick?: () => void;
+};
 
 type StatBadgeProps = {
   label: string;
@@ -27,9 +32,25 @@ function StatBadge({ label, value, icon, tone }: StatBadgeProps) {
   );
 }
 
-export function Header() {
+function getAvatarLabel(name?: string | null) {
+  const label = name?.trim();
+
+  if (!label) {
+    return 'ST';
+  }
+
+  return label
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('');
+}
+
+export function Header({ onAvatarClick }: HeaderProps) {
   const [isVisible, setIsVisible] = useState(true);
   const hideTimerRef = useRef<number | null>(null);
+  const user = getStoredAuthUser();
+  const avatarLabel = getAvatarLabel(user?.name || user?.email);
 
   useEffect(() => {
     const clearHideTimer = () => {
@@ -74,8 +95,12 @@ export function Header() {
     >
       <div className="mx-auto max-w-6xl rounded-[28px] border-2 border-gray-900 bg-[#FFF8E8] px-3 py-3 shadow-[6px_6px_0px_0px_rgba(31,41,55,1)] sm:px-5">
         <div className="flex items-center gap-2 md:hidden">
-          <button className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-gray-900 bg-[#9BE564] text-base font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]">
-            ST
+          <button
+            type="button"
+            onClick={onAvatarClick}
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-gray-900 bg-[#9BE564] text-base font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
+          >
+            {avatarLabel}
           </button>
 
           <div className="grid min-w-0 flex-1 grid-cols-2 gap-2">
@@ -112,15 +137,19 @@ export function Header() {
 
         <div className="hidden items-center justify-between gap-4 md:flex">
           <div className="flex items-center gap-4">
-            <button className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-gray-900 bg-[#9BE564] text-lg font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]">
-              ST
+            <button
+              type="button"
+              onClick={onAvatarClick}
+              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-gray-900 bg-[#9BE564] text-lg font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
+            >
+              {avatarLabel}
             </button>
             <div>
               <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-gray-700">
                 StVocab
               </p>
               <p className="text-lg font-black text-gray-900">
-                Sẵn sàng cho buổi học tiếp theo
+                {user?.name || user?.email || 'Sẵn sàng cho buổi học tiếp theo'}
               </p>
             </div>
           </div>
