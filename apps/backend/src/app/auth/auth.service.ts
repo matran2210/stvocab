@@ -12,27 +12,6 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // 1. Dành cho Client (Trang người dùng)
-  async loginClient(email: string) {
-    let user = await this.userRepository.findOne({ where: { email } });
-
-    // Nếu chưa có user thì tạo mới luôn (Fast Onboarding)
-    if (!user) {
-      user = this.userRepository.create({
-        email,
-        gold: 0,
-        learning_points: 0,
-        is_onboarded: false,
-      });
-      await this.userRepository.save(user);
-    }
-
-    const payload = { sub: user.id, email: user.email, role: 'user' };
-    return {
-      access_token: this.jwtService.sign(payload),
-      user,
-    };
-  }
 
   // 2. Dành cho Admin (Kiểm tra trực tiếp từ ENV, không dùng JWT)
   async loginAdmin(user: string, pass: string) {

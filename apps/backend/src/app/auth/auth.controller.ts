@@ -16,13 +16,6 @@ export class AuthController {
     };
   }
 
-  // API Login cho User (Chỉ cần email)
-  @Post('login')
-  async loginClient(@Body('email') email: string) {
-    if (!email) throw new UnauthorizedException('Email là bắt buộc');
-    return this.authService.loginClient(email);
-  }
-
   // API Login cho Admin (Sử dụng Basic Auth trong Header hoặc Body cho nhanh)
   @Post('admin/login')
   async loginAdmin(@Headers('authorization') auth: string) {

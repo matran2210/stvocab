@@ -180,7 +180,7 @@ export default function UserModal({ isOpen, onClose, onSuccess, editData }: User
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Điểm học tập</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Điểm</label>
                   <input
                     type="number" min="0"
                     value={formData.learning_points}

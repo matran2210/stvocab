@@ -1,0 +1,24 @@
+ # Với source apps/frontend
+
+ **Constraints & Rules:**
+- Use functional components and React Hooks (useState, useEffect, useNavigate from react-router-dom).
+- Use Tailwind CSS for all styling to ensure fast, responsive development.
+- Do not write backend code; mock all data and state transitions (like the login flow) locally.
+- Provide clean, modern, and engaging UI/UX appropriate for an e-learning app.
+
+UI/UX STYLING RULES (CRITICAL):
+Design the UI using the "Playful Neo-brutalism" aesthetic, matching these specific Tailwind CSS rules:
+
+Backgrounds & Colors: Use an off-white/cream background (bg-[#FFFBF5] or similar). Use vibrant colors for accents and buttons (e.g., vibrant green, pastel blue, peach).
+
+Borders: All buttons, cards, and input fields must have a thick, solid dark border (e.g., border-2 border-gray-900 or border-black).
+
+Hard Shadows: DO NOT use soft blur shadows. Use solid, offset hard shadows. Apply this Tailwind class to interactive elements and cards: shadow-[4px_4px_0px_0px_rgba(31,41,55,1)]. On hover, translate the element slightly and reduce the shadow to simulate a press effect (e.g., hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] transition-all).
+
+Border Radius: Use heavily rounded corners. Buttons should be pill-shaped (rounded-full), and cards should have large radius (rounded-2xl or rounded-3xl).
+
+Typography: Use a bold, rounded, and friendly sans-serif font structure. Make headings large and chunky (font-extrabold).
+
+
+# Với sources apps/backend
+Không viết dto, dùng any hết. API list bắt buộc phân trang
