@@ -9,6 +9,7 @@ type VocabularyCategorySectionProps = {
   mode: 'preview' | 'all';
   onViewAll?: () => void;
   onCollapse?: () => void;
+  onSelectCategory: (category: VocabularyCategory) => void;
 };
 
 const categoryTones = [
@@ -36,6 +37,7 @@ export function VocabularyCategorySection({
   mode,
   onViewAll,
   onCollapse,
+  onSelectCategory,
 }: VocabularyCategorySectionProps) {
   const [categories, setCategories] = useState<VocabularyCategory[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -132,7 +134,7 @@ export function VocabularyCategorySection({
             onClick={onCollapse}
             className="rounded-full border-2 border-gray-900 bg-[#9BE564] px-4 py-2 text-sm font-black shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
           >
-            Thu gọn
+            Thu
           </button>
         )}
       </div>
@@ -156,7 +158,13 @@ export function VocabularyCategorySection({
       ) : null}
 
       {!isLoading && !error && categories.length > 0 ? (
-        <div className={isPreview ? 'grid gap-4 md:grid-cols-2' : 'grid max-h-[calc(100vh-260px)] gap-4 overflow-y-auto pr-1 md:grid-cols-2'}>
+        <div
+          className={
+            isPreview
+              ? 'grid gap-4 md:grid-cols-2'
+              : 'neo-scrollbar grid max-h-[calc(100vh-260px)] gap-4 overflow-y-auto pr-2 md:grid-cols-2'
+          }
+        >
           {categories.map((category, index) => (
             <CategoryCard
               key={category.id}
@@ -164,6 +172,7 @@ export function VocabularyCategorySection({
               progress={getProgress(index)}
               lessons={getLessons(index)}
               tone={getTone(index)}
+              onClick={() => onSelectCategory(category)}
             />
           ))}
         </div>

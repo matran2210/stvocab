@@ -3,6 +3,7 @@ type CategoryCardProps = {
   progress: number;
   lessons: string;
   tone: string;
+  onClick?: () => void;
 };
 
 export function CategoryCard({
@@ -10,10 +11,13 @@ export function CategoryCard({
   progress,
   lessons,
   tone,
+  onClick,
 }: CategoryCardProps) {
   return (
-    <article
-      className={`rounded-[28px] border-2 border-gray-900 p-5 shadow-[6px_6px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] ${tone}`}
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full cursor-pointer rounded-[28px] border-2 border-gray-900 p-5 text-left shadow-[6px_6px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] ${tone}`}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
@@ -33,6 +37,6 @@ export function CategoryCard({
           style={{ width: `${progress}%` }}
         />
       </div>
-    </article>
+    </button>
   );
 }

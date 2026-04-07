@@ -39,4 +39,36 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  .neo-scrollbar {
+    scrollbar-width: auto;
+    scrollbar-color: #9be564 #fff8e8;
+  }
+
+  .neo-scrollbar::-webkit-scrollbar {
+    width: 18px;
+    height: 18px;
+  }
+
+  .neo-scrollbar::-webkit-scrollbar-track {
+    border: 2px solid #1f2937;
+    border-radius: 9999px;
+    background: #fff8e8;
+  }
+
+  .neo-scrollbar::-webkit-scrollbar-thumb {
+    border: 2px solid #1f2937;
+    border-radius: 9999px;
+    background:
+      linear-gradient(180deg, #9be564 0%, #c9f2c7 100%);
+  }
+
+  .neo-scrollbar::-webkit-scrollbar-thumb:hover {
+    background:
+      linear-gradient(180deg, #7ed957 0%, #9be564 100%);
+  }
+
+  .neo-scrollbar::-webkit-scrollbar-corner {
+    background: #fff8e8;
+  }
 }

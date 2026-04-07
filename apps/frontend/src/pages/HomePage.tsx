@@ -3,13 +3,20 @@ import { Header } from '../components/Header';
 import { NavigationMenu } from '../components/NavigationMenu';
 import { ProfilePanel } from '../components/ProfilePanel';
 import { VocabularyCategorySection } from '../components/VocabularyCategorySection';
+import { VocabularyListSection } from '../components/VocabularyListSection';
+import { VocabularyDetailSection } from '../components/VocabularyDetailSection';
 import { navigationItems } from '../data/navigation';
+import { type VocabularyCategory } from '../services/category-api';
 import { getCurrentUserProfile } from '../services/auth-api';
+import { type VocabularyItem } from '../services/vocabulary-api';
 import { getStoredAuthUser, type AuthenticatedUser } from '../utils/auth';
 
 export function HomePage() {
   const [activeItem, setActiveItem] = useState('learning');
   const [isViewingAllCategories, setIsViewingAllCategories] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<VocabularyCategory | null>(null);
+  const [selectedVocabulary, setSelectedVocabulary] = useState<VocabularyItem | null>(null);
+  const [categoryVocabularies, setCategoryVocabularies] = useState<VocabularyItem[]>([]);
   const [user, setUser] = useState<AuthenticatedUser | null>(() => getStoredAuthUser());
 
   const activeLabel =
@@ -42,6 +49,14 @@ export function HomePage() {
   const handleSelectMenuItem = (itemId: string) => {
     setActiveItem(itemId);
     setIsViewingAllCategories(false);
+    setSelectedCategory(null);
+    setSelectedVocabulary(null);
+    setCategoryVocabularies([]);
+  };
+
+  const handleSelectCategory = (category: VocabularyCategory) => {
+    setSelectedCategory(category);
+    setSelectedVocabulary(null);
   };
 
   return (
@@ -53,10 +68,40 @@ export function HomePage() {
           <ProfilePanel
             user={user}
           />
+        ) : activeItem === 'learning' && selectedCategory && selectedVocabulary ? (
+          <VocabularyDetailSection
+            category={selectedCategory}
+            items={categoryVocabularies}
+            currentVocabularyId={selectedVocabulary.id}
+            onBack={() => setSelectedVocabulary(null)}
+            onSelectVocabulary={(vocabularyId) => {
+              const nextVocabulary = categoryVocabularies.find(
+                (item) => item.id === vocabularyId
+              );
+
+              if (nextVocabulary) {
+                setSelectedVocabulary(nextVocabulary);
+              }
+            }}
+            onFinish={() => setSelectedVocabulary(null)}
+          />
+        ) : activeItem === 'learning' && selectedCategory ? (
+          <VocabularyListSection
+            category={selectedCategory}
+            onBack={() => {
+              setSelectedCategory(null);
+              setSelectedVocabulary(null);
+              setCategoryVocabularies([]);
+            }}
+            onSelectVocabulary={setSelectedVocabulary}
+            onStartStoryline={setSelectedVocabulary}
+            onItemsLoaded={setCategoryVocabularies}
+          />
         ) : activeItem === 'learning' && isViewingAllCategories ? (
           <VocabularyCategorySection
             mode="all"
             onCollapse={() => setIsViewingAllCategories(false)}
+            onSelectCategory={handleSelectCategory}
           />
         ) : (
           <>
@@ -97,6 +142,7 @@ export function HomePage() {
               <VocabularyCategorySection
                 mode="preview"
                 onViewAll={() => setIsViewingAllCategories(true)}
+                onSelectCategory={handleSelectCategory}
               />
             ) : null}
           </>
