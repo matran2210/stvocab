@@ -134,7 +134,7 @@ export function VocabularyCategorySection({
             onClick={onCollapse}
             className="rounded-full border-2 border-gray-900 bg-[#9BE564] px-4 py-2 text-sm font-black shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
           >
-            Thu
+            Thu lại
           </button>
         )}
       </div>
@@ -162,7 +162,7 @@ export function VocabularyCategorySection({
           className={
             isPreview
               ? 'grid gap-4 md:grid-cols-2'
-              : 'neo-scrollbar grid max-h-[calc(100vh-260px)] gap-4 overflow-y-auto pr-2 md:grid-cols-2'
+              : 'grid gap-4 md:grid-cols-2'
           }
         >
           {categories.map((category, index) => (

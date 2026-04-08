@@ -33,6 +33,31 @@ function PlayIcon() {
   );
 }
 
+function ArrowIcon({ direction }: { direction: 'left' | 'right' }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className={`h-5 w-5 stroke-current ${direction === 'right' ? '' : ''}`}
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {direction === 'left' ? (
+        <>
+          <path d="M19 12H5" />
+          <path d="M11 6 5 12l6 6" />
+        </>
+      ) : (
+        <>
+          <path d="M5 12h14" />
+          <path d="m13 6 6 6-6 6" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 function parseStoryline(storyline?: string | null) {
   if (!storyline?.trim()) {
     return '<p>Nội dung storyline sẽ được cập nhật sau.</p>';
@@ -257,29 +282,31 @@ export function VocabularyDetailSection({
             />
           </div>
 
-          <div className="mt-6 flex items-center justify-between gap-3 sm:grid sm:grid-cols-3">
+          <div className="mt-6 flex items-center justify-center gap-6">
             <button
               type="button"
               onClick={goPrevious}
               disabled={isFirst}
-              className="rounded-full border-2 border-gray-900 bg-white px-4 py-2 text-sm font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] sm:px-5 sm:py-4 sm:text-base"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-gray-900 bg-white text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] sm:h-14 sm:w-14"
+              aria-label="Từ trước"
             >
-              Prev
+              <ArrowIcon direction="left" />
             </button>
 
             {!isLast ? (
               <button
                 type="button"
                 onClick={goNext}
-                className="rounded-full border-2 border-gray-900 bg-[#9BE564] px-4 py-2 text-sm font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] sm:col-start-3 sm:px-5 sm:py-4 sm:text-base"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-gray-900 bg-[#9BE564] text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] sm:h-14 sm:w-14"
+                aria-label="Từ tiếp theo"
               >
-                Next
+                <ArrowIcon direction="right" />
               </button>
             ) : (
               <button
                 type="button"
                 onClick={onFinish}
-                className="rounded-full border-2 border-gray-900 bg-[#FF9B71] px-4 py-2 text-sm font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] sm:col-start-3 sm:px-5 sm:py-4 sm:text-base"
+                className="rounded-full border-2 border-gray-900 bg-[#FF9B71] px-4 py-2 text-sm font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] sm:px-5 sm:py-4 sm:text-base"
               >
                 Finish
               </button>

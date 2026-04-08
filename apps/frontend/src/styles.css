@@ -18,6 +18,13 @@
       radial-gradient(circle at top right, rgba(188, 231, 253, 0.35), transparent 32%),
       linear-gradient(180deg, #fffbf5 0%, #fff6e8 100%);
     color: #1f2937;
+    scrollbar-width: auto;
+    scrollbar-color: #9be564 #fff8e8;
+  }
+
+  html {
+    scrollbar-width: auto;
+    scrollbar-color: #9be564 #fff8e8;
   }
 
   * {
@@ -27,6 +34,36 @@
   button,
   input {
     font: inherit;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 18px;
+    height: 18px;
+  }
+
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track {
+    border: 2px solid #1f2937;
+    border-radius: 9999px;
+    background: #fff8e8;
+  }
+
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb {
+    border: 2px solid #1f2937;
+    border-radius: 9999px;
+    background: linear-gradient(180deg, #9be564 0%, #c9f2c7 100%);
+  }
+
+  html::-webkit-scrollbar-thumb:hover,
+  body::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #7ed957 0%, #9be564 100%);
+  }
+
+  html::-webkit-scrollbar-corner,
+  body::-webkit-scrollbar-corner {
+    background: #fff8e8;
   }
 }
 

@@ -182,7 +182,7 @@ export function VocabularyListSection({
               <p className="text-center">Âm thanh</p>
             </div>
 
-            <div className="neo-scrollbar max-h-[calc(100vh-320px)] overflow-y-auto">
+            <div>
               {items.map((item, index) => (
                 <div
                   key={item.id}
