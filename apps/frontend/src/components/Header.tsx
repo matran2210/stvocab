@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode } from 'react';
 import { type AuthenticatedUser } from '../utils/auth';
 
 type HeaderProps = {
@@ -52,51 +52,10 @@ function formatNumber(value?: number | null) {
 }
 
 export function Header({ user, onAvatarClick }: HeaderProps) {
-  const [isVisible, setIsVisible] = useState(true);
-  const hideTimerRef = useRef<number | null>(null);
   const avatarLabel = getAvatarLabel(user?.name || user?.email);
 
-  useEffect(() => {
-    const clearHideTimer = () => {
-      if (hideTimerRef.current !== null) {
-        window.clearTimeout(hideTimerRef.current);
-        hideTimerRef.current = null;
-      }
-    };
-
-    const scheduleHide = () => {
-      clearHideTimer();
-
-      if (window.scrollY <= 8) {
-        setIsVisible(true);
-        return;
-      }
-
-      hideTimerRef.current = window.setTimeout(() => {
-        setIsVisible(false);
-      }, 1000);
-    };
-
-    const handleScroll = () => {
-      setIsVisible(true);
-      scheduleHide();
-    };
-
-    scheduleHide();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      clearHideTimer();
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-40 px-4 pb-3 pt-4 transition-transform duration-300 sm:px-6 ${
-        isVisible ? 'translate-y-0' : '-translate-y-[120%]'
-      }`}
-    >
+    <header className="px-4 pb-3 pt-4 sm:px-6">
       <div className="mx-auto max-w-6xl rounded-[28px] border-2 border-gray-900 bg-[#FFF8E8] px-3 py-3 shadow-[6px_6px_0px_0px_rgba(31,41,55,1)] sm:px-5">
         <div className="flex items-center gap-2 md:hidden">
           <button

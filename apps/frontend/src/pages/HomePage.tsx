@@ -63,7 +63,7 @@ export function HomePage() {
     <main className="min-h-screen bg-[#FFFBF5] text-gray-900">
       <Header user={user} onAvatarClick={() => setActiveItem('profile')} />
 
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 pb-36 pt-28 sm:px-6 sm:pb-40">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 pb-24 pt-3 sm:px-6 sm:pb-16 sm:pt-4">
         {activeItem === 'profile' ? (
           <ProfilePanel
             user={user}
