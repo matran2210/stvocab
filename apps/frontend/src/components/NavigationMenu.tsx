@@ -265,8 +265,11 @@ export function NavigationMenu({
         />
       ) : null}
 
-      <nav className="pointer-events-none fixed bottom-4 left-4 z-40 sm:bottom-6 sm:left-6 sm:top-auto">
-        <div ref={panelRef} className="pointer-events-auto flex items-end gap-3 sm:items-start">
+      <nav className="pointer-events-none fixed bottom-12 left-4 z-40 sm:bottom-20 sm:left-6 sm:top-auto">
+        <div
+          ref={panelRef}
+          className="relative pointer-events-auto flex items-end gap-3 sm:items-start"
+        >
           <button
             type="button"
             aria-expanded={isOpen}
@@ -319,7 +322,7 @@ export function NavigationMenu({
           ) : null}
 
           <div
-            className={`origin-left overflow-hidden rounded-[26px] border-2 border-gray-900 bg-[#FFF4D6] shadow-[8px_8px_0px_0px_rgba(31,41,55,1)] transition-all duration-200 ${
+            className={`absolute bottom-0 left-[calc(100%+0.75rem)] origin-left overflow-hidden rounded-[26px] border-2 border-gray-900 bg-[#FFF4D6] shadow-[8px_8px_0px_0px_rgba(31,41,55,1)] transition-all duration-200 sm:top-0 sm:bottom-auto ${
               isOpen
                 ? 'translate-x-0 scale-100 opacity-100'
                 : '-translate-x-4 scale-95 opacity-0 pointer-events-none'
@@ -327,7 +330,7 @@ export function NavigationMenu({
           >
             <div
               ref={scrollRef}
-              className="max-w-[calc(100vw-2rem)] cursor-grab overflow-x-auto overflow-y-hidden p-2.5 active:cursor-grabbing sm:max-w-[min(56rem,calc(100vw-8rem))] sm:p-3"
+              className="max-w-[calc(100vw-2rem)] cursor-grab overflow-x-auto overflow-y-hidden p-2 active:cursor-grabbing sm:max-w-[min(56rem,calc(100vw-8rem))] sm:p-2.5"
               onMouseDown={startDrag}
               onMouseMove={handleDrag}
               onMouseUp={endDrag}
@@ -350,7 +353,7 @@ export function NavigationMenu({
                         onSelect(item.id);
                         setIsOpen(false);
                       }}
-                      className={`group flex min-h-[4.8rem] w-[7.25rem] shrink-0 flex-col items-start gap-2 rounded-[22px] border-2 border-gray-900 px-2.5 py-2.5 text-left transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[3px_3px_0px_0px_rgba(31,41,55,1)] sm:min-h-[5rem] sm:w-[7.5rem] ${
+                      className={`group flex min-h-[3.4rem] w-[10rem] shrink-0 items-center gap-2.5 rounded-[20px] border-2 border-gray-900 px-2.5 py-2 text-left transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[3px_3px_0px_0px_rgba(31,41,55,1)] sm:min-h-[3.6rem] sm:w-[10.5rem] ${
                         isActive
                           ? 'bg-[#9BE564] shadow-[5px_5px_0px_0px_rgba(31,41,55,1)]'
                           : 'bg-white shadow-[5px_5px_0px_0px_rgba(31,41,55,1)]'
@@ -359,7 +362,7 @@ export function NavigationMenu({
                     >
                       <NavItemIcon icon={item.icon} isActive={isActive} />
                       <div className="min-w-0 flex-1">
-                        <p className="line-clamp-2 text-xs font-black leading-tight text-gray-900 sm:text-[13px]">
+                        <p className="line-clamp-2 text-sm font-black leading-tight text-gray-900">
                           {item.label}
                         </p>
                       </div>

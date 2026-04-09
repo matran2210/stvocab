@@ -38,7 +38,7 @@ function ArrowIcon({ direction }: { direction: 'left' | 'right' }) {
     <svg
       viewBox="0 0 24 24"
       fill="none"
-      className={`h-5 w-5 stroke-current ${direction === 'right' ? '' : ''}`}
+      className="h-5 w-5 stroke-current"
       strokeWidth="2.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -78,14 +78,34 @@ export function VocabularyDetailSection({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [navigationDirection, setNavigationDirection] = useState<'left' | 'right'>('right');
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isSwipeDragging, setIsSwipeDragging] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const detailShellRef = useRef<HTMLDivElement | null>(null);
+  const hasMountedRef = useRef(false);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+  const isHorizontalSwipeRef = useRef(false);
+
+  const normalizedCurrentVocabularyId = String(currentVocabularyId);
 
   const currentIndex = useMemo(
-    () => items.findIndex((item) => item.id === currentVocabularyId),
-    [items, currentVocabularyId]
+    () => items.findIndex((item) => String(item.id) === normalizedCurrentVocabularyId),
+    [items, normalizedCurrentVocabularyId]
   );
-  const isFirst = currentIndex <= 0;
-  const isLast = currentIndex === items.length - 1;
+  const hasCurrentItem = currentIndex >= 0;
+  const isFirst = !hasCurrentItem || currentIndex === 0;
+  const isLast = !hasCurrentItem || currentIndex === items.length - 1;
+
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+
+    setIsPlaying(false);
+  }, [currentVocabularyId]);
 
   useEffect(() => {
     let isActive = true;
@@ -157,35 +177,163 @@ export function VocabularyDetailSection({
   };
 
   const goPrevious = () => {
-    if (isFirst) {
+    if (!hasCurrentItem || isFirst) {
       return;
     }
 
+    setNavigationDirection('left');
     onSelectVocabulary(items[currentIndex - 1].id);
   };
 
   const goNext = () => {
-    if (isLast) {
+    if (!hasCurrentItem || isLast) {
       return;
     }
 
+    setNavigationDirection('right');
     onSelectVocabulary(items[currentIndex + 1].id);
+  };
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+
+    if (!touch) {
+      return;
+    }
+
+    touchStartXRef.current = touch.clientX;
+    touchStartYRef.current = touch.clientY;
+    isHorizontalSwipeRef.current = false;
+    setIsSwipeDragging(false);
+    setDragOffset(0);
+  };
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    const startX = touchStartXRef.current;
+    const startY = touchStartYRef.current;
+
+    if (!touch || startX === null || startY === null) {
+      return;
+    }
+
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+
+    if (!isHorizontalSwipeRef.current) {
+      if (Math.abs(deltaX) < 10) {
+        return;
+      }
+
+      if (Math.abs(deltaX) <= Math.abs(deltaY)) {
+        touchStartXRef.current = null;
+        touchStartYRef.current = null;
+        setIsSwipeDragging(false);
+        setDragOffset(0);
+        return;
+      }
+
+      isHorizontalSwipeRef.current = true;
+      setIsSwipeDragging(true);
+    }
+
+    const shellWidth = detailShellRef.current?.offsetWidth ?? window.innerWidth;
+    const maxOffset = Math.max(140, shellWidth * 0.7);
+
+    setDragOffset(Math.max(-maxOffset, Math.min(maxOffset, deltaX)));
+    event.preventDefault();
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.changedTouches[0];
+    const startX = touchStartXRef.current;
+    const startY = touchStartYRef.current;
+    const wasHorizontalSwipe = isHorizontalSwipeRef.current;
+
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    isHorizontalSwipeRef.current = false;
+
+    if (!touch || startX === null || startY === null) {
+      setIsSwipeDragging(false);
+      setDragOffset(0);
+      return;
+    }
+
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+
+    setIsSwipeDragging(false);
+    setDragOffset(0);
+
+    const shellWidth = detailShellRef.current?.offsetWidth ?? window.innerWidth;
+    const swipeThreshold = Math.max(120, shellWidth * 0.45);
+
+    if (
+      !wasHorizontalSwipe ||
+      Math.abs(deltaX) < swipeThreshold ||
+      Math.abs(deltaX) < Math.abs(deltaY) * 1.2
+    ) {
+      return;
+    }
+
+    if (deltaX < 0) {
+      goNext();
+      return;
+    }
+
+    goPrevious();
   };
 
   return (
     <section className="mt-1">
-      <div className="flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex shrink-0 rounded-full border-2 border-gray-900 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
-        >
-          ← Quay lại
-        </button>
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        <div className="flex min-w-0 items-center justify-start">
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex shrink-0 rounded-full border-2 border-gray-900 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
+          >
+            ← Quay lại
+          </button>
+        </div>
 
-        <div className="ml-auto inline-flex min-w-0 items-center gap-2 rounded-full border-2 border-gray-900 bg-[#C9F2C7] px-4 py-2 text-sm font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)]">
-          <StoryIcon />
-          <span className="truncate">{category.name}</span>
+        <div className="relative z-10 flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={goPrevious}
+            disabled={isFirst}
+            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-2 border-gray-900 bg-white/85 text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(31,41,55,1)]"
+            aria-label="Từ trước"
+          >
+            <ArrowIcon direction="left" />
+          </button>
+
+          {!isLast ? (
+            <button
+              type="button"
+              onClick={goNext}
+              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-2 border-gray-900 bg-[#9BE564] text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
+              aria-label="Từ tiếp theo"
+            >
+              <ArrowIcon direction="right" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onFinish}
+              className="rounded-full border-2 border-gray-900 bg-[#FF9B71] px-4 py-2 text-sm font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)]"
+            >
+              Finish
+            </button>
+          )}
+        </div>
+
+        <div className="flex min-w-0 items-center justify-end">
+          <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-full border-2 border-gray-900 bg-[#C9F2C7] px-4 py-2 text-sm font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)]">
+            <StoryIcon />
+            <span className="truncate">{category.name}</span>
+          </div>
         </div>
       </div>
 
@@ -202,7 +350,26 @@ export function VocabularyDetailSection({
       ) : null}
 
       {!isLoading && !error && detail ? (
-        <>
+        <div className="relative mt-6">
+          <div
+            ref={detailShellRef}
+            key={currentVocabularyId}
+            className={`vocabulary-page-shell ${
+              isSwipeDragging
+                ? 'vocabulary-page-dragging'
+                : navigationDirection === 'right'
+                ? 'vocabulary-page-transition-forward'
+                : 'vocabulary-page-transition-backward'
+            }`}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchEnd}
+            style={{
+              transform: isSwipeDragging ? `translate3d(${dragOffset}px, 0, 0)` : undefined,
+              opacity: isSwipeDragging ? Math.max(0.82, 1 - Math.abs(dragOffset) / 420) : undefined,
+            }}
+          >
           <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
             <div className="order-2 rounded-[30px] border-2 border-gray-900 bg-white p-5 shadow-[8px_8px_0px_0px_rgba(31,41,55,1)] lg:order-1 lg:p-6">
               <div className="flex items-start justify-between gap-4">
@@ -281,38 +448,8 @@ export function VocabularyDetailSection({
               dangerouslySetInnerHTML={{ __html: parseStoryline(detail.storyline) }}
             />
           </div>
-
-          <div className="mt-6 flex items-center justify-center gap-6">
-            <button
-              type="button"
-              onClick={goPrevious}
-              disabled={isFirst}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-gray-900 bg-white text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] sm:h-14 sm:w-14"
-              aria-label="Từ trước"
-            >
-              <ArrowIcon direction="left" />
-            </button>
-
-            {!isLast ? (
-              <button
-                type="button"
-                onClick={goNext}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-gray-900 bg-[#9BE564] text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] sm:h-14 sm:w-14"
-                aria-label="Từ tiếp theo"
-              >
-                <ArrowIcon direction="right" />
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={onFinish}
-                className="rounded-full border-2 border-gray-900 bg-[#FF9B71] px-4 py-2 text-sm font-black text-gray-900 shadow-[4px_4px_0px_0px_rgba(31,41,55,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(31,41,55,1)] sm:px-5 sm:py-4 sm:text-base"
-              >
-                Finish
-              </button>
-            )}
           </div>
-        </>
+        </div>
       ) : null}
     </section>
   );
