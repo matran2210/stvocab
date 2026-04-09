@@ -68,6 +68,16 @@
 }
 
 @layer utilities {
+  .flip-card-3d {
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+  }
+
+  .flip-card-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;

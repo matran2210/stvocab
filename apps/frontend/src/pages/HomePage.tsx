@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FlipCardGameSection } from '../components/FlipCardGameSection';
 import { Header } from '../components/Header';
 import { NavigationMenu } from '../components/NavigationMenu';
 import { ProfilePanel } from '../components/ProfilePanel';
@@ -9,7 +10,11 @@ import { navigationItems } from '../data/navigation';
 import { type VocabularyCategory } from '../services/category-api';
 import { getCurrentUserProfile } from '../services/auth-api';
 import { type VocabularyItem } from '../services/vocabulary-api';
-import { getStoredAuthUser, type AuthenticatedUser } from '../utils/auth';
+import {
+  getStoredAuthUser,
+  saveStoredUser,
+  type AuthenticatedUser,
+} from '../utils/auth';
 
 export function HomePage() {
   const [activeItem, setActiveItem] = useState('learning');
@@ -59,6 +64,22 @@ export function HomePage() {
     setSelectedVocabulary(null);
   };
 
+  const handleUpdateUserGold = (gold: number) => {
+    setUser((currentUser) => {
+      if (!currentUser) {
+        return currentUser;
+      }
+
+      const nextUser = {
+        ...currentUser,
+        gold,
+      };
+
+      saveStoredUser(nextUser);
+      return nextUser;
+    });
+  };
+
   return (
     <main className="min-h-screen bg-[#FFFBF5] text-gray-900">
       <Header user={user} onAvatarClick={() => setActiveItem('profile')} />
@@ -68,6 +89,8 @@ export function HomePage() {
           <ProfilePanel
             user={user}
           />
+        ) : activeItem === 'game' ? (
+          <FlipCardGameSection onRewardCollected={handleUpdateUserGold} />
         ) : activeItem === 'learning' && selectedCategory && selectedVocabulary ? (
           <VocabularyDetailSection
             category={selectedCategory}

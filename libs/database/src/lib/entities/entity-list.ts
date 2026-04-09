@@ -1,6 +1,7 @@
 import { Attendance } from './attendance.entity';
 import { Category } from './category.entity';
 import { ChatMessage } from './chat-message.entity';
+import { GamePlayTurn } from './game-play-turn.entity';
 import { Item } from './item.entity';
 import { LearningLog } from './learning-log.entity';
 import { TestHistory } from './test-history.entity';
@@ -16,6 +17,7 @@ export const ENTITY_LIST = [
   UserInventory,
   Attendance,
   ChatMessage,
+  GamePlayTurn,
   Item,
   TestHistory,
 ];

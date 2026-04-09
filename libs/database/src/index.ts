@@ -12,3 +12,4 @@ export * from './lib/entities/user-inventory.entity';
 export * from './lib/entities/learning-log.entity';
 export * from './lib/entities/attendance.entity';
 export * from './lib/entities/chat-message.entity';
+export * from './lib/entities/game-play-turn.entity';
